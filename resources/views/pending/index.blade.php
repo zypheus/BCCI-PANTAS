@@ -49,6 +49,7 @@
                         <thead>
                             <tr>
                                 <th>Profile</th>
+                                <th>ID Number</th>
                                 <th>Name</th>
                                 <th>Course</th>
                                 <th>Year</th>
@@ -65,6 +66,7 @@
                                             No Image
                                         @endif
                                     </td>
+                                    <td>{{ $p->id_number ?? '—' }}</td>
                                     <td>{{ $p->firstname }} {{ $p->lastname }}</td>
                                     <td>{{ $p->course }}</td>
                                     <td>{{ $p->year }}</td>
@@ -80,7 +82,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="5">No pending student registrations.</td></tr>
+                                <tr><td colspan="6">No pending student registrations.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

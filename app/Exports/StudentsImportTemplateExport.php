@@ -10,7 +10,7 @@ class StudentsImportTemplateExport implements FromArray, WithHeadings
     public function headings(): array
     {
         return [
-            'student_id',
+            'id_number',
             'firstname',
             'lastname',
             'middle_initial',

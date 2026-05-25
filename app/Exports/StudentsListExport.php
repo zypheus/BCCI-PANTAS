@@ -15,7 +15,7 @@ class StudentsListExport implements FromCollection, WithHeadings
     public function collection()
     {
         return $this->students->map(fn ($s) => [
-            $s->student_id ?? $s->id_number ?? '',
+            $s->id_number ?? '',
             $s->lastname,
             $s->firstname,
             $s->middle_initial ?? '',
@@ -29,7 +29,7 @@ class StudentsListExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            'student_id',
+            'id_number',
             'lastname',
             'firstname',
             'middle_initial',

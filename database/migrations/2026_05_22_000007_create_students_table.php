@@ -12,10 +12,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('role_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('student_id')->nullable()->unique();
             $table->string('id_number')->nullable()->unique();
-            $table->string('lastname');
             $table->string('firstname');
+            $table->string('lastname');
             $table->string('middle_initial')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('blood_type', 10)->nullable();

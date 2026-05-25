@@ -89,7 +89,7 @@
                                         <span>No Image</span>
                                     @endif
                                 </td>
-                                <td>{{ $student->student_id ?? $student->id_number ?? '—' }}</td>
+                                <td>{{ $student->id_number ?? '—' }}</td>
                                 <td>{{ $student->lastname }}</td>
                                 <td>{{ $student->firstname }}</td>
                                 <td>{{ $student->course }}</td>

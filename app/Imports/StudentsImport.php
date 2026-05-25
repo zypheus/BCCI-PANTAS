@@ -4,7 +4,6 @@ namespace App\Imports;
 
 use App\Console\Commands\NormalizeStudentNames;
 use App\Models\Student;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -15,19 +14,20 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVal
     public function rules(): array
     {
         return [
-            '*.student_id' => 'required|distinct|unique:students,student_id',
+            '*.id_number' => 'required|distinct|unique:students,id_number',
             '*.firstname' => 'required|string|max:255',
             '*.lastname' => 'required|string|max:255',
             '*.qrcode' => 'nullable|distinct|unique:students,qrcode',
         ];
     }
+
     public function model(array $row)
     {
-        $studentId = trim((string) ($row['student_id'] ?? ''));
+        $idNumber = trim((string) ($row['id_number'] ?? $row['student_id'] ?? ''));
         $firstname = trim((string) ($row['firstname'] ?? ''));
         $lastname = trim((string) ($row['lastname'] ?? ''));
 
-        if ($studentId === '' || $firstname === '' || $lastname === '') {
+        if ($idNumber === '' || $firstname === '' || $lastname === '') {
             return null;
         }
 
@@ -37,7 +37,7 @@ class StudentsImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithVal
         }
 
         return new Student([
-            'student_id' => $studentId,
+            'id_number' => $idNumber,
             'firstname' => $firstname,
             'lastname' => $lastname,
             'middle_initial' => trim((string) ($row['middle_initial'] ?? '')) ?: null,

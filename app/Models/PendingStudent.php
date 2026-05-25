@@ -7,18 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class PendingStudent extends Model
 {
     protected $fillable = [
-        'student_id',
         'id_number',
         'firstname',
         'lastname',
-        'mobile_number',
         'middle_initial',
-        'course',
-        'year',
-        'profile_picture',
-        'qrcode',
         'birth_date',
         'blood_type',
+        'course',
+        'year',
+        'mobile_number',
+        'profile_picture',
         'emergency_person',
         'emergency_relationship',
         'emergency_number',
