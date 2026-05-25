@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('emergency_number')->nullable();
             $table->text('emergency_address')->nullable();
             $table->string('student_signature')->nullable();
+            $table->text('address')->nullable();
             $table->timestamps();
         });
     }

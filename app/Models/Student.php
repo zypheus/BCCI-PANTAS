@@ -27,6 +27,7 @@ class Student extends Model
         'middle_initial',
         'role_id',
         'normalized_name',
+        'address',
     ];
     
     protected static function booted()

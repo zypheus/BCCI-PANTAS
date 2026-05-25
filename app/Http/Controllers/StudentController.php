@@ -380,20 +380,20 @@ class StudentController extends Controller
                 */
                 Student::create([
                     'student_id' => $pending->student_id,
+                    'id_number' => $pending->id_number,
                     'lastname' => $pending->lastname,
                     'firstname' => $pending->firstname,
-                    'middle_initial' => $pending->middle_initial ?? '',
-                    'birthday' => $pending->birthday,
+                    'middle_initial' => $pending->middle_initial,
+                    'birth_date' => $pending->birth_date,
+                    'blood_type' => $pending->blood_type,
                     'course' => $pending->course,
                     'year' => $pending->year,
-    
                     'mobile_number' => $pending->mobile_number,
-                    'address' => $pending->address,
                     'emergency_person' => $pending->emergency_person,
                     'emergency_relationship' => $pending->emergency_relationship,
                     'emergency_number' => $pending->emergency_number,
                     'emergency_address' => $pending->emergency_address,
-    
+                    'address' => $pending->address,
                     'profile_picture' => $pending->profile_picture,
                     'student_signature' => $pending->student_signature,
                     'qrcode' => $qrcode,

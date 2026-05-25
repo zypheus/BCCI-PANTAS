@@ -24,6 +24,7 @@ class PendingStudent extends Model
         'emergency_number',
         'emergency_address',
         'student_signature',
+        'address',
     ];
 
     public function role()
