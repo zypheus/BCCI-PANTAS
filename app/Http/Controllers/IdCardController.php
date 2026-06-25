@@ -50,6 +50,96 @@ class IdCardController extends Controller
         }
     }
 
+    private function wrapTextByWords(string $text, int $maxCharsPerLine): array
+    {
+        $words = preg_split('/\s+/', trim($text));
+        $lines = [];
+        $current = '';
+
+        foreach ($words as $word) {
+            if ($word === '') {
+                continue;
+            }
+
+            $candidate = $current === '' ? $word : $current.' '.$word;
+
+            if (strlen($candidate) <= $maxCharsPerLine) {
+                $current = $candidate;
+            } else {
+                if ($current !== '') {
+                    $lines[] = $current;
+                }
+                $current = $word;
+            }
+        }
+
+        if ($current !== '') {
+            $lines[] = $current;
+        }
+
+        return $lines;
+    }
+
+    /**
+     * Draw multi-line address scaled to fit the ID back layout (644px-wide template).
+     */
+    private function drawFittedAddress($img, string $address, int $centerX, int $startY, int $maxLines = 4, int $maxBottomY = 620): void
+    {
+        $text = strtoupper(trim($address));
+
+        if ($text === '') {
+            return;
+        }
+
+        $configs = [
+            ['size' => 20, 'chars' => 22],
+            ['size' => 18, 'chars' => 26],
+            ['size' => 16, 'chars' => 30],
+            ['size' => 14, 'chars' => 34],
+            ['size' => 12, 'chars' => 38],
+        ];
+
+        $chosen = null;
+
+        foreach ($configs as $config) {
+            $lines = $this->wrapTextByWords($text, $config['chars']);
+            $lineHeight = (int) round($config['size'] * 1.2);
+            $bottomY = $startY + (count($lines) * $lineHeight);
+
+            if (count($lines) <= $maxLines && $bottomY <= $maxBottomY) {
+                $chosen = [
+                    'lines' => $lines,
+                    'size' => $config['size'],
+                    'lineHeight' => $lineHeight,
+                ];
+                break;
+            }
+        }
+
+        if ($chosen === null) {
+            $fallback = end($configs);
+            $lines = array_slice($this->wrapTextByWords($text, $fallback['chars']), 0, $maxLines);
+            $chosen = [
+                'lines' => $lines,
+                'size' => $fallback['size'],
+                'lineHeight' => (int) round($fallback['size'] * 1.2),
+            ];
+        }
+
+        foreach ($chosen['lines'] as $index => $line) {
+            $this->drawText(
+                $img,
+                $line,
+                $centerX,
+                $startY + ($index * $chosen['lineHeight']),
+                $chosen['size'],
+                '#000',
+                'center',
+                'top'
+            );
+        }
+    }
+
     private function isRgbBackgroundColor(int $rgba, array $targetRgb, int $tolerance): bool
     {
         $r = ($rgba >> 16) & 0xFF;
@@ -330,53 +420,10 @@ class IdCardController extends Controller
         if ($student->emergency_number) {
             $this->drawText($img, $student->emergency_number, 320, 480, 30, '#000');
         }
+
         if ($student->emergency_address) {
-
-            $address = strtoupper($student->emergency_address);
-        
-            // --------- AUTO LINE WRAP (max ~30 chars per line) ---------
-            $maxChars = 60; // adjust if needed
-            $words = explode(' ', $address);
-        
-            $lines = [];
-            $current = '';
-        
-            foreach ($words as $word) {
-                if (strlen($current . ' ' . $word) <= $maxChars) {
-                    $current .= ($current ? ' ' : '') . $word;
-                } else {
-                    $lines[] = $current;
-                    $current = $word;
-                }
-            }
-            if ($current) {
-                $lines[] = $current;
-            }
-        
-            // Measure longest line for font size logic
-            $maxLength = max(array_map('strlen', $lines));
-        
-            // --------- FONT SIZE RESIZING ---------
-            $fontSize = 25;
-        
-            if ($maxLength > 25 && $maxLength <= 35) {
-                $fontSize = 200;
-            } elseif ($maxLength > 35 && $maxLength <= 45) {
-                $fontSize = 150;
-            } elseif ($maxLength > 45) {
-                $fontSize = 100;
-            }
-        
-            // --------- DRAW CENTERED MULTI-LINE TEXT ---------
-            $centerX = 320;  
-            $startY  = 510;
-            $spacing = $fontSize + 10; // dynamic vertical spacing
-        
-            foreach ($lines as $i => $line) {
-                $this->drawText($img, $line, $centerX, $startY + ($i * $spacing), $fontSize, '#000');
-            }
+            $this->drawFittedAddress($img, $student->emergency_address, 322, 510);
         }
-
 
         // Signature
         if ($student->student_signature && file_exists(base_path($student->student_signature))) {
