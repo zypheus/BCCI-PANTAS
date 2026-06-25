@@ -223,6 +223,19 @@
     white-space: nowrap;
 }
 
+.data-page .data-panel-table-wrap,
+.data-page .table-responsive {
+    overflow: visible !important;
+}
+
+.data-page .table-action-dropdown {
+    position: relative;
+}
+
+.data-page .table-action-dropdown .dropdown-menu {
+    z-index: 1085;
+}
+
 .data-pending-toggle .btn-primary {
     background-color: var(--brand-button-bg, #1f7a1f);
     border-color: var(--brand-button-bg, #1f7a1f);

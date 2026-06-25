@@ -1,14 +1,23 @@
 (function (global) {
     'use strict';
 
-    const defaultOnHydrated = (panel) => {
+    const initBootstrapDropdowns = (root = document) => {
         if (typeof bootstrap === 'undefined') {
             return;
         }
 
-        panel.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
+        root.querySelectorAll('[data-bs-toggle="dropdown"]').forEach((el) => {
+            const existing = bootstrap.Dropdown.getInstance(el);
+            if (existing) {
+                existing.dispose();
+            }
+
             bootstrap.Dropdown.getOrCreateInstance(el);
         });
+    };
+
+    const defaultOnHydrated = (panel) => {
+        initBootstrapDropdowns(panel);
     };
 
     const resolveElement = (root, selector) => {
@@ -67,10 +76,18 @@
         return nextUrl.toString();
     };
 
+    const disposePanel = (panel) => {
+        panel.__dataPanelAbort?.abort();
+        panel.__dataPanelAbort = null;
+        delete panel.dataset.hydratableBound;
+    };
+
     const initPanel = (panel, options = {}) => {
-        if (!panel || panel.dataset.hydratableBound === 'true') {
+        if (!panel) {
             return null;
         }
+
+        disposePanel(panel);
 
         const formSelector = panel.dataset.form;
         const skeletonSelector = panel.dataset.skeleton;
@@ -85,6 +102,10 @@
         if (!form || !skeletonTemplate) {
             return null;
         }
+
+        const abortController = new AbortController();
+        panel.__dataPanelAbort = abortController;
+        const { signal } = abortController;
 
         let activeController = null;
 
@@ -153,8 +174,8 @@
             loadPanel(appendTabInput(paginationLink.href, panel));
         };
 
-        form.addEventListener('submit', onFormSubmit);
-        panel.addEventListener('click', onPanelClick);
+        form.addEventListener('submit', onFormSubmit, { signal });
+        panel.addEventListener('click', onPanelClick, { signal });
 
         if (!global.__dataPanelPopstateBound && !global.Turbo) {
             global.__dataPanelPopstateBound = true;
@@ -173,6 +194,7 @@
         panel.__dataPanelPathMatch = pathMatch;
         panel.__dataPanelLoad = loadPanel;
         panel.dataset.hydratableBound = 'true';
+        onHydrated(panel);
 
         return { loadPanel };
     };
@@ -186,7 +208,14 @@
     global.DataPanel = {
         init: initPanel,
         initAll,
+        initDropdowns: initBootstrapDropdowns,
     };
+
+    if (global.Turbo) {
+        document.addEventListener('turbo:before-cache', () => {
+            document.querySelectorAll('[data-hydratable-panel]').forEach(disposePanel);
+        });
+    }
 
     if (!global.Turbo) {
         if (document.readyState === 'loading') {

@@ -29,9 +29,9 @@
                         <td>{{ $employee->position }}</td>
                         <td>{{ $employee->employee_id ?? $employee->qrcode }}</td>
                         <td>
-                            <div class="dropdown">
-                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">Options</button>
-                                <ul class="dropdown-menu">
+                            <div class="dropdown table-action-dropdown">
+                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Options</button>
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="{{ route('employees.edit', $employee->id) }}">Edit</a></li>
                                     <li>
                                         <form action="{{ route('employees.destroy', $employee->id) }}" method="POST" onsubmit="return confirm('Delete this employee?');">
@@ -44,12 +44,12 @@
                             </div>
                         </td>
                         <td>
-                            <div class="dropdown">
-                                <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">Generate</button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.front', $employee->id) }}" target="_blank">Front</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.back', $employee->id) }}" target="_blank">Back</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.download', $employee->id) }}">Download ZIP</a></li>
+                            <div class="dropdown table-action-dropdown">
+                                <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Generate</button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.front', $employee->id) }}" target="_blank" data-turbo="false">Front</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.back', $employee->id) }}" target="_blank" data-turbo="false">Back</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('employees.idcard.download', $employee->id) }}" data-turbo="false">Download ZIP</a></li>
                                 </ul>
                             </div>
                         </td>
